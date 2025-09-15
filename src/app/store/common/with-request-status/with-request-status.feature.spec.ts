@@ -1,59 +1,82 @@
-import { withRequestStatus } from './with-request-status.feature';
+import { TestBed } from '@angular/core/testing';
+import { HttpErrorResponse } from '@angular/common/http';
+import { patchState, signalStore } from '@ngrx/signals';
+import {
+  setError,
+  setFulfilled,
+  setPending,
+  withRequestStatus,
+  WithRequestStatusEnum,
+} from './with-request-status.feature';
 
-enum WithRequestStatusEnum {
-  IDLE = 'IDLE',
-  PENDING = 'PENDING',
-  FULFILLED = 'FULFILLED'
-}
+describe('withRequestStatus feature', () => {
+  const RequestStatusTestStore = signalStore(
+    { providedIn: 'root', protectedState: false },
+    withRequestStatus()
+  );
 
-describe('withRequestStatus', () => {
-  let store: any;
+  let store: InstanceType<typeof RequestStatusTestStore>;
 
   beforeEach(() => {
-    // Instanciar y extender el estado simulado
-    store = withRequestStatus();
-    // Mock interno observable para controlar el estado
-    let _requestStatus: any = WithRequestStatusEnum.IDLE;
-    store.requestStatus = () => _requestStatus;
-    // Helper para cambiar el estado
-    store._setStatus = (status: any) => _requestStatus = status;
+    TestBed.configureTestingModule({
+      providers: [RequestStatusTestStore],
+    });
+    store = TestBed.inject(RequestStatusTestStore);
   });
 
-  it('inicia en estado IDLE', () => {
+  it('initialState: idle, no pending, no fulfilled, error = null', () => {
     expect(store.currentStatus()).toBe(WithRequestStatusEnum.IDLE);
-    expect(store.isPending()).toBe(false);
-    expect(store.isFulfilled()).toBe(false);
+    expect(store.isPending()).toBeFalse();
+    expect(store.isFulfilled()).toBeFalse();
     expect(store.error()).toBeNull();
   });
 
-  it('detecta correctamente el estado PENDING', () => {
-    store._setStatus(WithRequestStatusEnum.PENDING);
-    expect(store.isPending()).toBe(true);
-    expect(store.isFulfilled()).toBe(false);
+  it('setPending:', () => {
+    patchState(store, setPending);
     expect(store.currentStatus()).toBe(WithRequestStatusEnum.PENDING);
+    expect(store.isPending()).toBeTrue();
+    expect(store.isFulfilled()).toBeFalse();
     expect(store.error()).toBeNull();
   });
 
-  it('detecta correctamente el estado FULFILLED', () => {
-    store._setStatus(WithRequestStatusEnum.FULFILLED);
-    expect(store.isPending()).toBe(false);
-    expect(store.isFulfilled()).toBe(true);
+  it('setFulfilled:', () => {
+    patchState(store, setFulfilled);
     expect(store.currentStatus()).toBe(WithRequestStatusEnum.FULFILLED);
+    expect(store.isPending()).toBeFalse();
+    expect(store.isFulfilled()).toBeTrue();
     expect(store.error()).toBeNull();
   });
 
-  it('devuelve error cuando el estado es un objeto', () => {
-    const errorStatus = { error: 'Ha fallado la petición', code: 500 };
-    store._setStatus(errorStatus);
-    expect(store.currentStatus()).toBe(errorStatus);
-    expect(store.error()).toBe('Ha fallado la petición');
-    expect(store.isPending()).toBe(false);
-    expect(store.isFulfilled()).toBe(false);
+  it('setError with objet: currentStatus is HttpErrorResponse and error() return payload', () => {
+    const httpError = new HttpErrorResponse({
+      status: 500,
+      error: { message: 'boom' },
+    });
+    patchState(store, setError(httpError));
+    const status = store.currentStatus();
+    expect(status).toBe(httpError);
+    expect(store.isPending()).toBeFalse();
+    expect(store.isFulfilled()).toBeFalse();
+    expect(store.error()).toEqual({ message: 'boom' });
   });
 
-  it('error retorna null si el objeto no tiene error', () => {
-    const noErrorStatus = { code: 202 };
-    store._setStatus(noErrorStatus);
-    expect(store.error()).toBeUndefined();
+  it('setError with string: error() is string', () => {
+    const httpError = new HttpErrorResponse({
+      status: 400,
+      error: 'bad request',
+    });
+    patchState(store, setError(httpError));
+    expect(store.currentStatus()).toBe(httpError);
+    expect(store.error()).toBe('bad request');
+  });
+
+  it('idemPow: multiple setPending/setFulfilled', () => {
+    patchState(store, setPending);
+    patchState(store, setPending);
+    expect(store.isPending()).toBeTrue();
+
+    patchState(store, setFulfilled);
+    patchState(store, setFulfilled);
+    expect(store.isFulfilled()).toBeTrue();
   });
 });
