@@ -1,0 +1,59 @@
+<form [formGroup]="form" novalidate (ngSubmit)="onSubmit()" class="flex flex-auto flex-wrap">
+  <div class="flex w-full flex-col sm:pl-8">
+    @if (!isNew()) {
+      <mat-form-field class="w-full">
+        <mat-label>Store</mat-label>
+        <input matInput formControlName="uuid" />
+      </mat-form-field>
+    }
+    <mat-form-field class="w-full" [hideRequiredMarker]="!isEdit()">
+      <mat-label>Client Name</mat-label>
+      <input matInput formControlName="clientName" [required]="isEdit()" />
+      @if (isEdit() && form.get('clientName').hasError('required')) {
+        <mat-error>
+          Client Name is required.
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field class="w-full" [hideRequiredMarker]="!isEdit()">
+      <mat-label>Family Type</mat-label>
+      <mat-select formControlName="familyType" [required]="isEdit()">
+        <mat-option [value]="FamilyType.EST">
+          {{ FamilyType.EST }}
+        </mat-option>
+        <mat-option [value]="FamilyType.ROB">
+          {{ FamilyType.ROB }}
+        </mat-option>
+      </mat-select>
+      @if (isEdit() && form.get('familyType').hasError('required')) {
+        <mat-error>
+          Family Type is required.
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field class="w-full" [hideRequiredMarker]="!isEdit()">
+      <mat-label>Capacity</mat-label>
+      <input matInput formControlName="capacity" [required]="isEdit()" type="number" />
+      @if (isEdit() && form.get('capacity').hasError('required')) {
+        <mat-error>
+          Client Name is required.
+        </mat-error>
+      }
+    </mat-form-field>
+  </div>
+  @if (isEdit() || isNew()) {
+    <div class="flex w-full flex-col">
+      <div class="gap-2 px-1 py-2 flex flex-row justify-end">
+        <button
+          mat-stroked-button
+          type="submit"
+          class="h-7 min-h-7 min-w-10 px-2 md:mr-10 leading-6 primary"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  }
+</form>

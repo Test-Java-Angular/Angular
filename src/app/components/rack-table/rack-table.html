@@ -1,0 +1,61 @@
+<div class="flex w-full flex-col">
+  <div class="grid">
+    <!-- Header -->
+    <div
+      class="rack-grid text-secondary sticky top-0 z-10 grid gap-4 bg-gray-50 px-6 py-4 text-md font-semibold shadow dark:bg-black dark:bg-opacity-5 md:px-8"
+      [ngClass]="{'rack-grid-edit': isEdit() }"
+      matSort
+      matSortDisableClear
+    >
+      <div>
+        ID
+      </div>
+      <div
+        class="hidden md:block"
+        [mat-sort-header]="'uuid'"
+      >
+        Installation
+      </div>
+      <div
+        class="hidden lg:block"
+        [mat-sort-header]="'type'"
+      >
+        Type
+      </div>
+      @if (isEdit()) {
+        <div>Actions</div>
+      }
+    </div>
+    <!-- Rows -->
+    @for (rack of racks$();
+      track trackByRack($index, rack)) {
+      <div
+        class="rack-grid grid items-center gap-4 border-b px-6 py-3 md:px-8"
+        [ngClass]="{'rack-grid-edit': isEdit() }"
+      >
+        <!-- ID -->
+        <div>
+          {{ rack.id }}
+        </div>
+
+        <div class="truncate">
+          {{ rack.uuid }}
+        </div>
+
+        <div class="truncate">
+          {{ rack.type }}
+        </div>
+
+        <!-- Details button -->
+        @if (isEdit()) {
+          <div class="flex items-center">
+            <button matMiniFab aria-label="Example icon button with a delete icon" class="mx-2 mat-background-accent"
+                    (click)="deleteRack(rack)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

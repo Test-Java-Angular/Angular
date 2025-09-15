@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Create {{ data.isWarehouse ? 'Warehouse' : 'Rack' }}</h2>
+<mat-dialog-content class="flex w-full flex-col">
+  @if (data.isWarehouse) {
+    <app-warehouse-form [isEdit]="true" [warehouse]="null" [isNew]="true"
+                        (saveWarehouse)="saveInfo($event, true)"
+                        class="flex w-full flex-col"></app-warehouse-form>
+  } @else {
+    <app-rack-form (saveRack)="saveInfo($event, false)"
+                    class="flex w-full flex-col"></app-rack-form>
+  }
+</mat-dialog-content>

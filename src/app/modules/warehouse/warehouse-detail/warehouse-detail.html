@@ -1,0 +1,51 @@
+@if (isLoading()) {
+  <div class="absolute inset-x-0 bottom-0">
+    <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+  </div>
+}
+<div class="overflow-hidden shadow-lg">
+  <div class="flex border-b">
+    <div class="flex w-full flex-col">
+      <div class="flex flex-col p-8 sm:flex-row">
+        <!-- Form Warehouse -->
+        <div
+          class="flex flex-auto flex-wrap"
+        >
+          <app-warehouse-form [warehouse]="warehouse()" [isEdit]="isEdit"
+                              (saveWarehouse)="saveInfo($event)"
+                              class="flex w-full flex-col sm:pl-8"></app-warehouse-form>
+        </div>
+        <div class="flex flex-auto flex-wrap sm:ml-8">
+          <app-rack-table [isEdit]="isEdit" [warehouseId]="warehouseId" class="flex w-full flex-col"></app-rack-table>
+          @if (isEdit) {
+            <div class="px-1 py-2 flex w-full flex-row items-center justify-end">
+              <div class="flex flex-col">
+                <button
+                  mat-stroked-button
+                  (click)="createRack()"
+                  class="h-7 min-h-7 min-w-10 px-2 md:mr-10 leading-6 primary"
+                >
+                  Add Rack
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="z-10 border-b bg-gray-50 dark:bg-transparent sm:absolute sm:inset-x-0 sm:bottom-0 sm:border-b-0 sm:border-t">
+  <div class="flex items-center">
+    @if (error()) {
+      <div class="p-5 mr-4 flex items-center">
+        <mat-icon
+          class="text-red-500">error</mat-icon>
+        <span class="ml-2">An error occurred, try again!</span>
+        <span class="ml-2">Status: {{ error().status }}</span>
+        <span class="ml-2">Detail: {{ error().detail }}</span>
+      </div>
+    }
+  </div>
+</div>

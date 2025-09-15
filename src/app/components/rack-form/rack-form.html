@@ -1,0 +1,37 @@
+<form [formGroup]="form" novalidate (ngSubmit)="onSubmit()" class="flex flex-auto flex-wrap">
+  <div class="flex w-full flex-col sm:pl-8">
+    <mat-form-field class="w-full">
+      <mat-label>Rack Type</mat-label>
+      <mat-select formControlName="type">
+        <mat-option [value]="RackType.A">
+          {{ RackType.A }}
+        </mat-option>
+        <mat-option [value]="RackType.B">
+          {{ RackType.B }}
+        </mat-option>
+        <mat-option [value]="RackType.C">
+          {{ RackType.C }}
+        </mat-option>
+        <mat-option [value]="RackType.D">
+          {{ RackType.D }}
+        </mat-option>
+      </mat-select>
+      @if (form.get('type').hasError('required')) {
+        <mat-error>
+          Type is required.
+        </mat-error>
+      }
+    </mat-form-field>
+  </div>
+  <div class="flex w-full flex-col">
+    <div class="gap-2 px-1 py-2 flex flex-row justify-end">
+      <button
+        mat-stroked-button
+        type="submit"
+        class="h-7 min-h-7 min-w-10 px-2 md:mr-10 leading-6 primary"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,155 @@
+@if (isLoading()) {
+  <div class="absolute inset-x-0 bottom-0">
+    <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+  </div>
+}
+<div class="grid">
+  <!-- Header -->
+  <div
+    class="warehouse-grid text-secondary sticky top-0 z-10 grid gap-4 bg-gray-50 px-6 py-4 text-md font-semibold shadow dark:bg-black dark:bg-opacity-5 md:px-8"
+    matSort
+    matSortDisableClear
+  >
+    <div>
+      ID
+    </div>
+    <div [mat-sort-header]="'client.name'">Client Name</div>
+    <div
+      class="hidden md:block"
+      [mat-sort-header]="'uuid'"
+    >
+      Store
+    </div>
+    <div
+      class="hidden lg:block"
+      [mat-sort-header]="'familyType'"
+    >
+      Type
+    </div>
+    <div
+      class="hidden sm:block"
+      [mat-sort-header]="'capacity'"
+    >
+      Size
+    </div>
+    <div class="sm:block">Actions</div>
+  </div>
+  <!-- Rows -->
+  @for (warehouse of warehouses$();
+    track trackByFn($index, warehouse)) {
+    <div
+      class="warehouse-grid grid items-center gap-4 border-b px-6 py-3 md:px-8"
+    >
+      <!-- ID -->
+      <div>
+        {{ warehouse.id }}
+      </div>
+
+      <!-- Name -->
+      <div class="truncate">
+        {{ warehouse.clientName }}
+      </div>
+
+      <div class="hidden truncate md:block">
+        {{ warehouse.uuid }}
+      </div>
+
+      <div class="hidden truncate lg:block">
+        {{ warehouse.familyType }}
+      </div>
+
+      <!-- Size -->
+      <div class="hidden items-center sm:flex">
+        <div class="min-w-4">
+          {{ warehouse.capacity }}
+        </div>
+        <!-- Low stock -->
+        @if (warehouse.capacity < 20) {
+          <div
+            class="ml-2 flex h-4 w-1 items-end overflow-hidden rounded bg-red-200"
+          >
+            <div
+              class="flex h-1/3 w-full bg-red-600"
+            ></div>
+          </div>
+        }
+        <!-- Medium stock -->
+        @if (warehouse.capacity >= 20 &&
+        warehouse.capacity < 30) {
+          <div
+            class="ml-2 flex h-4 w-1 items-end overflow-hidden rounded bg-orange-200"
+          >
+            <div
+              class="flex h-2/4 w-full bg-orange-400"
+            ></div>
+          </div>
+        }
+        <!-- High stock -->
+        @if (warehouse.capacity >= 30) {
+          <div
+            class="ml-2 flex h-4 w-1 items-end overflow-hidden rounded bg-green-100"
+          >
+            <div
+              class="flex h-full w-full bg-green-400"
+            ></div>
+          </div>
+        }
+      </div>
+
+      <!-- Details button -->
+      <div class="flex items-center">
+        <a
+          matMiniFab
+          class="h-7 min-h-7 min-w-10 px-2 leading-6 mx-2"
+          [routerLink]="['/warehouse', warehouse.id, 'show']"
+        >
+          <mat-icon>visibility</mat-icon>
+        </a>
+        <a
+          matMiniFab
+          class="h-7 min-h-7 min-w-10 px-2 leading-6 mx-2"
+          [routerLink]="['/warehouse', warehouse.id, 'edit']"
+        >
+          <mat-icon>edit</mat-icon>
+        </a>
+        <button matMiniFab aria-label="Example icon button with a delete icon" class="mx-2 mat-background-accent"
+                (click)="deleteWarehouse(warehouse)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
+<div class="gap-2 px-1 py-2 flex flex-row justify-end">
+  <div>
+    <button
+      mat-stroked-button
+      (click)="createWarehouse()"
+      class="h-7 min-h-7 min-w-10 px-2 md:mr-10 leading-6 primary"
+    >
+      Add
+    </button>
+  </div>
+</div>
+
+<div class="flex items-center">
+  @if (error()) {
+    <div class="p-5 mr-4 flex items-center">
+      <mat-icon
+        class="text-red-500">error</mat-icon>
+      <span class="ml-2">An error occurred, try again!</span>
+      <span class="ml-2">Status: {{ error().status }}</span>
+      <span class="ml-2">Detail: {{ error().detail }}</span>
+    </div>
+  }
+</div>
+<mat-paginator
+  class="z-10 border-b bg-gray-50 dark:bg-transparent sm:absolute sm:inset-x-0 sm:bottom-0 sm:border-b-0 sm:border-t"
+  [ngClass]="{ 'pointer-events-none': isLoading() }"
+  [length]="total$()"
+  [pageIndex]="currentPage()"
+  [pageSize]="size()"
+  [pageSizeOptions]="[5, 10, 25, 100]"
+  [showFirstLastButtons]="true"
+></mat-paginator>

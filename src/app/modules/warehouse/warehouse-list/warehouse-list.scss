@@ -1,0 +1,15 @@
+.warehouse-grid {
+  grid-template-columns: 24px auto 40px;
+
+  @screen sm {
+    grid-template-columns: 24px auto 112px 200px;
+  }
+
+  @screen md {
+    grid-template-columns: 24px auto 300px 96px 200px;
+  }
+
+  @screen lg {
+    grid-template-columns: 24px auto 300px 112px 96px 200px;
+  }
+}
